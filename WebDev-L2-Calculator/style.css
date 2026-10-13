@@ -1,0 +1,132 @@
+
+/*Default browser spacing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Displaying calculator on the page */
+body {
+    font-family: Arial, sans-serif;
+    background: #eaf0f8;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Calculator details */
+.calculator {
+    width: 320px;
+    background: #ffffff;
+    padding: 22px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Heading */
+h1 {
+    text-align: center;
+    margin-bottom: 18px;
+    color: rgb(45, 91, 45);
+    font-size: 24px;
+}
+
+/* Screen details*/
+.display {
+    background: rgb(45, 91, 45);
+    color: white;
+    padding: 18px 12px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    text-align: right;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    min-height: 85px;
+}
+
+#expression {
+    font-size: 25px;
+    min-height: 30px;
+}
+
+#result {
+    font-size: 16px;
+    color: rgb(192, 244, 228);
+    margin-top: 5px;
+    min-height: 19px;
+}
+
+/* Button layout by using CSS Grid */
+.btns {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+/* General button design */
+button {
+    border: none;
+    border-radius: 9px;
+    min-height: 52px;
+    font-size: 18px;
+    font-weight: bold;
+    background: rgb(26, 87, 26);
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+/* Hover effect on btn */
+button:hover {
+    background: #9aa6b7;
+}
+
+/* Click effect on btn*/
+button:active {
+    transform: scale(0.96);
+}
+
+/* Operator buttons */
+.operator {
+    background: rgb(51, 69, 51);
+    color: white;
+}
+
+.operator:hover{
+    background-color: rgb(90, 123, 112)
+}
+
+/* Clear and delete buttons */
+.special {
+    background: rgb(0, 15, 0);
+    color: white;
+    font-size: 15px;
+}
+
+.special:hover{
+    background-color: rgb(22, 123, 89);
+}
+
+/* Equals button */
+.equals {
+    background: rgb(84, 204, 84);
+    color: white;
+    grid-row: span 2;
+}
+
+.equals:hover {
+    background: #3c496c;
+}
+
+/* Make zero wider */
+.zero {
+    grid-column: span 2;
+}
+
+.point:hover{
+    border: 2px solid black;
+}
+
+
