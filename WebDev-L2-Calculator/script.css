@@ -1,0 +1,191 @@
+const expressionDisplay = document.getElementById("expression");
+const resultDisplay = document.getElementById("result");
+
+const buttons = document.querySelector(".btns");
+
+let expression = "";
+
+function updateDisplay() {
+    expressionDisplay.textContent = expression || "0";
+    resultDisplay.textContent = "";
+}
+
+function addNumber(number) {
+    expression += number;
+    updateDisplay();
+}
+
+function addDecimal() {
+    // Find the current number after the last operator
+    const parts = expression.split(/[+\-*/]/);
+    const currentNumber = parts[parts.length - 1];
+
+    // Don't allow two decimal points in one number
+    if (currentNumber.includes(".")) {
+        return;
+    }
+
+    // Start a number like 0.5 instead of .5
+    if (currentNumber === "") {
+        expression += "0";
+    }
+
+    expression += ".";
+    updateDisplay();
+}
+
+function addOperator(operator) {
+    if (expression === "") {
+        // Allow a negative number to start the expression
+        if (operator === "-") {
+            expression = "-";
+            updateDisplay();
+        }
+        return;
+    }
+
+    const lastCharacter = expression.slice(-1);
+
+    // Replace the previous operator if another is pressed
+    if ("+-*/".includes(lastCharacter)) {
+        expression = expression.slice(0, -1);
+    }
+
+    expression += operator;
+    updateDisplay();
+}
+
+function clearCalculator() {
+    expression = "";
+    resultDisplay.textContent = "";
+    updateDisplay();
+}
+
+function backspace() {
+    expression = expression.slice(0, -1);
+    updateDisplay();
+}
+
+function calculateExpression(input) {
+    const tokens = [];
+    let number = "";
+
+    // Separate numbers and operators
+    for (let i = 0; i < input.length; i++) {
+        const char = input[i];
+
+        if ((char >= "0" && char <= "9") || char === ".") {
+            number += char;
+        } else if ("+-*/".includes(char)) {
+
+            // Allow negative numbers
+            if (
+                char === "-" &&
+                (i === 0 || "+-*/".includes(input[i - 1]))
+            ) {
+                number += char;
+                continue;
+            }
+
+            if (!/^-?\d+(\.\d+)?$/.test(number)) {
+                throw new Error("Invalid expression");
+            }
+
+            tokens.push(parseFloat(number), char);
+            number = "";
+        } else {
+            throw new Error("Invalid expression");
+        }
+    }
+
+    if (!/^-?\d+(\.\d+)?$/.test(number)) {
+        throw new Error("Incomplete expression");
+    }
+
+    tokens.push(parseFloat(number));
+
+    // Calculate multiplication and division first
+    const reduced = [tokens[0]];
+
+    for (let i = 1; i < tokens.length; i += 2) {
+        const operator = tokens[i];
+        const nextNumber = tokens[i + 1];
+
+        if (operator === "*" || operator === "/") {
+            const previousNumber = reduced.pop();
+            let value;
+
+            if (operator === "*") {
+                value = previousNumber * nextNumber;
+            } else {
+                if (nextNumber === 0) {
+                    throw new Error("Cannot divide by zero");
+                }
+
+                value = previousNumber / nextNumber;
+            }
+
+            reduced.push(value);
+        } else {
+            reduced.push(operator, nextNumber);
+        }
+    }
+
+    // Calculate addition and subtraction
+    let result = reduced[0];
+
+    for (let i = 1; i < reduced.length; i += 2) {
+        const operator = reduced[i];
+        const nextNumber = reduced[i + 1];
+
+        if (operator === "+") {
+            result += nextNumber;
+        } else if (operator === "-") {
+            result -= nextNumber;
+        }
+    }
+
+    //throw an error when result is invalid
+    if (!Number.isFinite(result)) {
+        throw new Error("Invalid result");
+    }
+
+    return Number(result.toPrecision(12));
+}
+
+//Make buttons functional
+buttons.addEventListener("click", function (event) {
+    const button = event.target;
+
+    if (button.dataset.number !== undefined) {
+        if (button.dataset.number === ".") {
+            addDecimal();
+        } else {
+            addNumber(button.dataset.number);
+        }
+    }
+
+    if (button.dataset.operator !== undefined) {
+        addOperator(button.dataset.operator);
+    }
+
+    if (button.dataset.action === "clear") {
+        clearCalculator();
+    }
+
+    if (button.dataset.action === "backspace") {
+        backspace();
+    }
+
+    
+    if (button.dataset.action === "equals") {
+       try {
+        const answer = calculateExpression(expression);
+
+        resultDisplay.textContent = answer;
+      } catch (error) {
+        resultDisplay.textContent = error.message;
+    }
+}
+
+});
